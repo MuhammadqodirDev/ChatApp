@@ -1,0 +1,69 @@
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment directories
+venv/
+env/
+*.env/
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# Ignore operating system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temporary files
+*.log
+*.bak
+*.tmp
+
+# Ignore local configuration files
+*.local
+*.cfg
+
+# Ignore database files
+*.sqlite3
+*.db
+
+# Ignore compiled JavaScript files
+*.js.map
+
+# Ignore compiled CSS files
+*.css.map
+
+# Ignore compiled files for TypeScript
+*.tsbuildinfo
+
+# Ignore Node.js modules
+node_modules/
+
+# Ignore compiled Java files
+*.class
+
+# Ignore compiled C++ files
+*.o
+*.out
+
+# Ignore compiled C# files
+*.dll
+*.exe
+
+# Ignore images and media files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp3
+*.mp4
+*.avi

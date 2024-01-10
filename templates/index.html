@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <input type="text" id="message-input" placeholder="Type a message...">
+        <button id="send-button">Send</button>
+    </div>
+
+    <script>
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const messageContainer = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.innerText = 'Received: ' + data.message;
+            messageContainer.appendChild(messageElement);
+        };
+
+        document.getElementById('send-button').addEventListener('click', function () {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInput.value = '';
+        });
+    </script>
+</body>
+</html>
