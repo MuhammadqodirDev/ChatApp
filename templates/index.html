@@ -13,22 +13,49 @@
     </div>
 
     <script>
-        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/api/v1/ws/chat/');
 
         chatSocket.onmessage = function (e) {
+            console.log('WebSocket message received:', e);
             const data = JSON.parse(e.data);
             const messageContainer = document.getElementById('chat-messages');
             const messageElement = document.createElement('div');
+            console.log(data.message, 'kkkk')
             messageElement.innerText = 'Received: ' + data.message;
             messageContainer.appendChild(messageElement);
         };
 
+        chatSocket.onopen = function (event) {
+        console.log('WebSocket connection opened:', event);
+    };
+
+        // Event handler for when a message is received from the WebSocket server
+        // chatSocket.onmessage = function (event) {
+        //     const data = JSON.parse(event.data);
+        //     console.log('WebSocket message received:', data);
+
+        //     // You can also update the DOM or perform other actions with the received data
+        //     // document.getElementById('output').innerHTML = 'Received message: ' + data.message;
+        // };
+
+        // Event handler for when the WebSocket connection is closed
+        chatSocket.onclose = function (event) {
+            console.log('WebSocket connection closed:', event);
+        };
+
+        // Event handler for errors
+        chatSocket.onerror = function (event) {
+            console.error('WebSocket error:', event);
+        };
+
+
         document.getElementById('send-button').addEventListener('click', function () {
             const messageInput = document.getElementById('message-input');
             const message = messageInput.value;
-            chatSocket.send(JSON.stringify({
+            let res = chatSocket.send(JSON.stringify({
                 'message': message
             }));
+            console.log(res)
             messageInput.value = '';
         });
     </script>
