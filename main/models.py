@@ -28,6 +28,11 @@ class CustomUser(AbstractUser):
     def save(self, *args, **kwargs):
         super().save()
 
+    @property
+    def get_token(self):
+        token, created = Token.objects.get_or_create(user=self)
+        return token.key
+
 
 @receiver(post_save, sender=CustomUser)
 def generate_token(sender, instance, created, **kwargs):

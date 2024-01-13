@@ -10,6 +10,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if self.scope["user"].is_authenticated:
             user = self.scope["user"]
         else:
+            print(self.scope.get("query_string"))
             query = parse_qs(self.scope.get("query_string").decode("utf-8"))
 
             token = query.get('token')[0]
