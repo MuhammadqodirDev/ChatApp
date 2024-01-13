@@ -10,7 +10,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 @admin.register(CustomUser)
 class EmployeeAdmin(UserAdmin):
-    list_display = ['id', 'username', 'first_name', 'last_name', 'is_active']
+    list_display = ['id', 'username', 'first_name', 'last_name', 'is_active', 'get_token']
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name')}),
@@ -20,6 +20,10 @@ class EmployeeAdmin(UserAdmin):
         # (_('Extra'), {'fields': ()}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
+
+    def get_token(self, obj):
+        token = Token.objects.get(user=obj)
+        return token.key
 
 
 @admin.register(Chat)

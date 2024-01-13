@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Permission, Group
 from rest_framework.authtoken.models import Token
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class CustomUser(AbstractUser):
 
@@ -26,6 +28,15 @@ class CustomUser(AbstractUser):
     def save(self, *args, **kwargs):
         super().save()
 
+
+@receiver(post_save, sender=CustomUser)
+def generate_token(sender, instance, created, **kwargs):
+    """
+    Signal handler to create another object when an instance of YourModel is created.
+    """
+    if created:
+        token = Token.objects.create(user=instance)
+        print(token)
 
 
 class Chat(models.Model):

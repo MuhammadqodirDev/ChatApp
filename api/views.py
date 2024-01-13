@@ -34,3 +34,8 @@ class LoginView(APIView):
 class Checkview(APIView):
     def get(self, request):
         return Response({})
+    
+
+
+# for i in CustomUser.objects.all():
+#     Token.objects.get_or_create(user=i)
