@@ -15,6 +15,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             token = query.get('token')[0]
 
+
             # Authenticate the user using the token
             user = await self.get_user_from_token(token)
 

@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    # 'daphne',
+    'daphne',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -120,11 +120,15 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+import os
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
+STATICFILES_DIRES = [BASE_DIR / 'staticfiles']
+STATIC_ROOT = os.path.join('static')
+MEDIA_ROOT = os.path.join('media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
