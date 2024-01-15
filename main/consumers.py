@@ -4,6 +4,7 @@ from main.models import CustomUser, Chat, Message
 from channels.db import database_sync_to_async
 from rest_framework.authtoken.models import Token
 from urllib.parse import parse_qs
+import pytz
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -53,12 +54,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         if res:
             await self.channel_layer.group_add(chat.chat_name, self.channel_name)
+            tashkent_timezone = pytz.timezone('Asia/Tashkent')
+            created_at = res.created_at
+            localized_datetime = created_at.astimezone(tashkent_timezone)
+
+            formatted_datetime = localized_datetime.strftime('%d-%m-%Y %H:%M')
+
+
             await self.channel_layer.group_send(
                 chat.chat_name,
                 {
                     "type": "chat.message",
                     "message": message,
-                    "chat_name": chat.chat_name,
+                    "chat_id": chat.id,
+                    "created_at": localized_datetime.strftime('%d-%m-%Y %H:%M'),
                 },
             )
 
@@ -101,13 +110,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return None
 
     async def chat_message(self, event):
+        user = self.user
         message = event['message']
         chat_name = event['chat_name']
+        created_at = event['created_at']
 
         # Send the message to the WebSocket
         await self.send(text_data=json.dumps({
             'message': message,
             'chat_name': chat_name,
+            'created_at': created_at,
+            'user': {
+                'id': user.id,
+                'first_name': user.first_name,
+            }
         }))
 
     

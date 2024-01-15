@@ -50,6 +50,20 @@ class Chat(models.Model):
     participants = models.ManyToManyField(CustomUser, related_name='chats', blank=True)
     is_group_chat = models.BooleanField(default=False)
 
+    @property
+    def last_message(self):
+        return self.messages.all().order_by('id').last()
+    @property
+    def first_user(self):
+        if self.is_group_chat == False:
+            return self.participants.first()
+        return
+    @property
+    def second_user(self):
+        if self.is_group_chat == False:
+            return self.participants.last()
+        return
+
 
     def __str__(self):
         if self.is_group_chat:

@@ -6,23 +6,50 @@
     <title>Chat App</title>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="chat-messages"></div>
-        <input type="text" id="message-input" placeholder="Type a message...">
-        <button id="send-button">Send</button>
-    </div>
+    <form method="get">
+        <select name="room" id="">
+            <option value="">- - - - </option>
+            {% for i in user_chats %}
+                <option value="{{i.id}}"
+                
+                {% if selected_chat == i %}
+                    selected
+                {% endif %}
+                    >{{ i.name }}</option>
+            {% endfor %}
+                
+        </select>
+        <button type="submit">Otish</button>
+    </form>
+    
+    {% if selected_chat %}
+        <div id="chat-container">
+            <div id="chat-messages">
+                {% for message in chat_messages %}
+                    <div>{{ message.sender }}: {{ message.text }} {{ message.created_at|date:"d-m-Y H:i"  }}</div>
+                {% endfor %}
+                
+            </div>
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-button">Send</button>
+            
+                
+        </div>
+        
+    {% endif %}
+        
 
     <script>
         const chatSocket = new WebSocket('ws://' + window.location.host + '/api/v1/ws/chat/');
 
         chatSocket.onmessage = function (e) {
-            console.log('WebSocket message received:', e);
             const data = JSON.parse(e.data);
-            const messageContainer = document.getElementById('chat-messages');
-            const messageElement = document.createElement('div');
-            console.log(data.message, 'kkkk')
-            messageElement.innerText = 'Received: ' + data.message;
-            messageContainer.appendChild(messageElement);
+            if (data.chat_id == "{{selected_chat.id}}") {
+                const messageContainer = document.getElementById('chat-messages');
+                const messageElement = document.createElement('div');
+                messageElement.innerText = data.user.first_name + ': ' + data.message + " " + data.created_at;
+                messageContainer.appendChild(messageElement);
+            }
         };
 
         chatSocket.onopen = function (event) {
@@ -54,9 +81,6 @@
             const message = messageInput.value;
             let res = chatSocket.send(JSON.stringify({
                 'message': message,
-                "kwargs": {
-                    "chat_id": 1
-                }
             }));
             console.log(res)
             messageInput.value = '';
