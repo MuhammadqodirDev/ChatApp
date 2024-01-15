@@ -112,13 +112,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         user = self.user
         message = event['message']
-        chat_name = event['chat_name']
+        chat_id = event['chat_id']
         created_at = event['created_at']
 
         # Send the message to the WebSocket
         await self.send(text_data=json.dumps({
             'message': message,
-            'chat_name': chat_name,
+            'chat_id': chat_id,
             'created_at': created_at,
             'user': {
                 'id': user.id,

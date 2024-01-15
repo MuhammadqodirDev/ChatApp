@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
 </head>
+    <style>
+        .d-none {
+            display: none;
+        }
+    </style>
 <body>
-    <form method="get">
-        <select name="room" id="">
-            <option value="">- - - - </option>
+    <form style="margin-bottom: 2rem;" method="get">
+        <select id="chat_select" name="room" id="">
+            <option value="0">- - - - </option>
             {% for i in user_chats %}
                 <option value="{{i.id}}"
                 
@@ -19,24 +24,36 @@
             {% endfor %}
                 
         </select>
-        <button type="submit">Otish</button>
     </form>
     
-    {% if selected_chat %}
-        <div id="chat-container">
-            <div id="chat-messages">
-                {% for message in chat_messages %}
+    {% for i in user_chats %}
+        <div class="chat-container d-none" data-id="{{i.id}}" id="chat-container{{i.id}}">
+            <div id="chat-messages{{i.id}}">
+                {% for message in i.messages.all %}
                     <div>{{ message.sender }}: {{ message.text }} {{ message.created_at|date:"d-m-Y H:i"  }}</div>
                 {% endfor %}
                 
             </div>
-            <input type="text" id="message-input" placeholder="Type a message...">
-            <button id="send-button">Send</button>
-            
-                
+            <input type="text" id="message-input{{i.id}}" placeholder="Type a message...">
+            <button id="send-button{{i.id}}">Send</button>
         </div>
-        
-    {% endif %}
+    {% endfor %}
+
+    <script>
+        let select = document.querySelector('#chat_select')
+        var elements = document.querySelectorAll('.chat-container')
+        select.addEventListener('change', function() {
+            elements.forEach(function(element) {
+                if (!element.classList.contains("d-none")) {
+                    element.classList.add("d-none");
+                }
+            })
+            try {
+                document.querySelector('#chat-container' + select.value).classList.remove('d-none')
+            }
+            catch {}
+        })
+    </script>
         
 
     <script>
@@ -44,12 +61,10 @@
 
         chatSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
-            if (data.chat_id == "{{selected_chat.id}}") {
-                const messageContainer = document.getElementById('chat-messages');
-                const messageElement = document.createElement('div');
-                messageElement.innerText = data.user.first_name + ': ' + data.message + " " + data.created_at;
-                messageContainer.appendChild(messageElement);
-            }
+            const messageContainer = document.getElementById('chat-messages' + select.value);
+            const messageElement = document.createElement('div');
+            messageElement.innerText = data.user.first_name + ': ' + data.message + " " + data.created_at;
+            messageContainer.appendChild(messageElement);
         };
 
         chatSocket.onopen = function (event) {
@@ -74,17 +89,22 @@
         chatSocket.onerror = function (event) {
             console.error('WebSocket error:', event);
         };
+        
+        elements.forEach(function(element) {
+            let id = element.getAttribute('data-id')
+            document.getElementById(`send-button${id}`).addEventListener('click', function () {
+                const messageInput = document.getElementById(`message-input${id}`);
+                const message = messageInput.value;
+                let res = chatSocket.send(JSON.stringify({
+                    'message': message,
+                    "kwargs": {
+                        'chat_id': parseInt(id)
+                    }
+                }));
+                messageInput.value = '';
+            });
 
-
-        document.getElementById('send-button').addEventListener('click', function () {
-            const messageInput = document.getElementById('message-input');
-            const message = messageInput.value;
-            let res = chatSocket.send(JSON.stringify({
-                'message': message,
-            }));
-            console.log(res)
-            messageInput.value = '';
-        });
+        })
     </script>
 </body>
 </html>
